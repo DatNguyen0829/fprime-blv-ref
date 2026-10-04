@@ -3,3 +3,4 @@
 
 # Local requirements:
 -r ./lib/fprime/requirements.txt
+west
