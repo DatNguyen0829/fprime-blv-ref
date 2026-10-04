@@ -7,6 +7,9 @@ build-fprime-*
 *.template.cpp
 *.template.hpp
 
+# Repositories downloaded and managed by West
+/lib/zephyr-workspace/
+
 # Misc
 /venv/
 /fprime-venv/
