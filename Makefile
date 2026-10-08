@@ -34,3 +34,6 @@ setup: ## Set up the repo
 	west config zephyr.base
 	@echo "Updating west manifest into zephyr-workspace..."
 	west update
+	west packages pip --install
+	cd $(PROJECT_ROOT)/lib/zephyr-workspace/
+	west sdk install --toolchains arm-zephyr-eabi
