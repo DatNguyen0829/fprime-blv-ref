@@ -10,6 +10,8 @@
 
 // Necessary project-specified types
 #include <Fw/Types/MallocAllocator.hpp>
+#include <Fw/Types/Assert.hpp>
+#include <zephyr/drivers/uart.h>
 
 // Public functions for use in main program are namespaced with deployment module FprimeBlvRef
 // This is also the namespace where the topology components are instantiated by FPP.
@@ -19,18 +21,30 @@ namespace FprimeBlvRef {
 Fw::MallocAllocator mallocator;
 
 // Rate group timing: base clock interval and divisors are coupled to rate group names
-const Fw::TimeInterval rateGroupInterval(1, 0);  // 1Hz base clock
+static constexpr U32 BASE_RATE_PERIOD_MS = 100; // 100ms period
 Svc::RateGroupDriver::DividerSet rateGroupDivisorsSet{{{1, 0}, {2, 0}, {4, 0}}};
-// Divisors: 1Hz, 0.5Hz, 0.25Hz
+// Divisors: 10Hz, 5Hz, 2.5Hz
 
 // Context tokens for rate group members (unused, set to zero)
 Svc::ActiveRateGroup::ContextArray rateGroup_1HzContext(0);
 Svc::ActiveRateGroup::ContextArray rateGroup_0_5HzContext(0);
 Svc::ActiveRateGroup::ContextArray rateGroup_0_25HzContext(0);
 
-enum TopologyConstants {
-    COMM_PRIORITY = 34,
-};
+/**
+ * \brief: to debug
+ */
+void debugMarker(const struct device* uart, const char* text) {
+    if (uart == nullptr) {
+        return;
+    }
+
+    while (*text != '\0') {
+        uart_poll_out(uart, *text++);
+    }
+
+    uart_poll_out(uart, '\r');
+    uart_poll_out(uart, '\n');
+}
 
 /**
  * \brief configure/setup components in project-specific way
@@ -56,53 +70,60 @@ void configureTopology() {
 }
 
 void setupTopology(const TopologyState& state) {
-    // Autocoded initialization. Function provided by autocoder.
+    // debugMarker(state.uartDevice, "S0 ENTER");
+
     initComponents(state);
-    // Autocoded id setup. Function provided by autocoder.
+    // debugMarker(state.uartDevice, "S1 INIT");
+
     setBaseIds();
-    // Autocoded connection wiring. Function provided by autocoder.
+    // debugMarker(state.uartDevice, "S2 IDS");
+
     connectComponents();
-    // Autocoded command registration. Function provided by autocoder.
+    // debugMarker(state.uartDevice, "S3 CONNECT");
+
     regCommands();
-    // Autocoded configuration. Function provided by autocoder.
+    // debugMarker(state.uartDevice, "S4 COMMANDS");
+
     configComponents(state);
-    // Project-specific component configuration. Function provided above. May be inlined, if desired.
+    // debugMarker(state.uartDevice, "S5 AUTO CONFIG");
+
     configureTopology();
-    // Autocoded parameter read from file. Function provided by autocoder.
+    // debugMarker(state.uartDevice, "S6 MANUAL CONFIG");
+
     readParameters();
-    // Autocoded parameter loading. Function provided by autocoder.
+    // debugMarker(state.uartDevice, "S7 READ PARAMS");
+
     loadParameters();
-    // Autocoded task kick-off (active components). Function provided by autocoder.
+    // debugMarker(state.uartDevice, "S8 LOAD PARAMS");
+
     startTasks(state);
-    if (state.uartDevice != nullptr) {
-        Os::TaskString name("ReceiveTask");
-        // Uplink is configured for receive so a socket task is started
-        if (comDriver.open(state.uartDevice, static_cast<Drv::LinuxUartDriver::UartBaudRate>(state.baudRate), 
-                           Drv::LinuxUartDriver::NO_FLOW, Drv::LinuxUartDriver::PARITY_NONE, 2048)) {
-            comDriver.start(COMM_PRIORITY, Default::STACK_SIZE);
-        } else {
-            printf("Failed to open UART device %s at baud rate %" PRIu32 "\n", state.uartDevice, state.baudRate);
-        }
-    }
+    // debugMarker(state.uartDevice, "S9 START TASKS");
+
+    FW_ASSERT(state.uartDevice != nullptr);
+
+    comDriver.configure(state.uartDevice, state.baudRate);
+    // debugMarker(state.uartDevice, "S10 UART CONFIG");
 }
 
 void startRateGroups() {
-    // Blocks until stopRateGroups() is called (e.g. from signal handler)
-    timer.startTimer(rateGroupInterval);
+    timer.configure(BASE_RATE_PERIOD_MS);
+    timer.start();
+
+    while(true){
+        timer.cycle();
+    }
 }
 
 void stopRateGroups() {
-    timer.quit();
+    timer.stop();
 }
 
 void teardownTopology(const TopologyState& state) {
+    timer.stop(); 
+
     // Autocoded (active component) task clean-up. Functions provided by topology autocoder.
     stopTasks(state);
     freeThreads(state);
-
-    // Other task clean-up.
-    comDriver.quitReadThread();
-    (void)comDriver.join();
 
     // Resource deallocation
     cmdSeq.deallocateBuffer(mallocator);

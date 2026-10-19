@@ -25,6 +25,11 @@
 // Include autocoded FPP constants
 #include "FprimeBlvRef/ReferenceDeployment/Top/FppConstantsAc.hpp"
 
+// Zephyr-specific headers
+#include <zephyr/device.h>
+#include <zephyr/drivers/uart.h>
+#include <zephyr/kernel.h>
+
 /**
  * \brief required ping constants
  *
@@ -62,7 +67,7 @@ namespace FprimeBlvRef {
  * contents are entirely up to the definition of the project. This deployment uses subtopologies.
  */
 struct TopologyState {
-    const char* uartDevice; //!< UART device path for communication
+    const device* uartDevice; //!< Zephyr UART device
     U32 baudRate;          //!< Baud rate for UART communication
     CdhCore::SubtopologyState cdhCore;           //!< Subtopology state for CdhCore
     ComCcsds::SubtopologyState comCcsds;         //!< Subtopology state for ComCcsds 
