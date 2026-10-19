@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 3.24.2)
 
-# Allow Zephyr to discover custom board definitions under this project.
 list(APPEND BOARD_ROOT "${CMAKE_CURRENT_LIST_DIR}")
 
-# Load Zephyr for embedded builds, but not for host-based unit tests.
+# Native/unit-test configuration does not load Zephyr.
 if (NOT BUILD_TESTING)
     find_package(
         Zephyr
