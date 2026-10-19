@@ -19,7 +19,7 @@ module FprimeBlvRef {
 
   module Default {
     constant QUEUE_SIZE = 10
-    constant STACK_SIZE = 64 * 1024
+    constant STACK_SIZE = 8 * 1024 # Must match thread stack size allocated in prj.conf
   }
 
   # ----------------------------------------------------------------------
@@ -30,24 +30,24 @@ module FprimeBlvRef {
   instance rateGroup_1Hz: Svc.ActiveRateGroup base id 0x10001000 \
     queue size Default.QUEUE_SIZE \
     stack size Default.STACK_SIZE \
-    priority 43
+    priority 1
 
   # 0.5Hz rate group (divisor 2 of 1Hz base clock)
   instance rateGroup_0_5Hz: Svc.ActiveRateGroup base id 0x10002000 \
     queue size Default.QUEUE_SIZE \
     stack size Default.STACK_SIZE \
-    priority 42
+    priority 2
 
   # 0.25Hz rate group (divisor 4 of 1Hz base clock)
   instance rateGroup_0_25Hz: Svc.ActiveRateGroup base id 0x10003000 \
     queue size Default.QUEUE_SIZE \
     stack size Default.STACK_SIZE \
-    priority 41
+    priority 3
 
   instance cmdSeq: Svc.CmdSequencer base id 0x10004000 \
     queue size Default.QUEUE_SIZE \
     stack size Default.STACK_SIZE \
-    priority 40
+    priority 12
 
   # ----------------------------------------------------------------------
   # Queued component instances
@@ -58,14 +58,14 @@ module FprimeBlvRef {
   # Passive component instances
   # ----------------------------------------------------------------------
 
-  instance chronoTime: Svc.ChronoTime base id 0x10010000
+  instance chronoTime: Zephyr.ZephyrTime base id 0x10010000
 
   instance rateGroupDriver: Svc.RateGroupDriver base id 0x10011000
 
   instance systemResources: Svc.SystemResources base id 0x10012000
 
-  instance timer: Svc.LinuxTimer base id 0x10013000
+  instance timer: Zephyr.ZephyrRateDriver base id 0x10013000
 
-  instance comDriver: Drv.LinuxUartDriver base id 0x10014000
+  instance comDriver: Zephyr.ZephyrUartDriver base id 0x10014000
 
 }

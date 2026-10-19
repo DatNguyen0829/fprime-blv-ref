@@ -100,14 +100,23 @@ module FprimeBlvRef {
       # timer to drive rate group
       timer.CycleOut -> rateGroupDriver.CycleIn
 
-      # 1Hz rate group
+      # Divider output drives this active rate group
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup_1Hz] -> rateGroup_1Hz.CycleIn
-      rateGroup_1Hz.RateGroupMemberOut[0] -> CdhCore.tlmSend.Run
-      rateGroup_1Hz.RateGroupMemberOut[1] -> FileHandling.fileDownlink.Run
-      rateGroup_1Hz.RateGroupMemberOut[2] -> systemResources.run
-      rateGroup_1Hz.RateGroupMemberOut[3] -> ComCcsds.comQueue.run
-      rateGroup_1Hz.RateGroupMemberOut[4] -> ComCcsds.aggregator.timeout
-      rateGroup_1Hz.RateGroupMemberOut[5] -> CdhCore.cmdDisp.run
+      
+      # Receive bytes first
+      rateGroup_1Hz.RateGroupMemberOut[0] -> comDriver.schedIn
+
+      # Process newly received commands
+      rateGroup_1Hz.RateGroupMemberOut[1] -> CdhCore.cmdDisp.run
+
+      # Process outgoing packets
+      rateGroup_1Hz.RateGroupMemberOut[2] -> ComCcsds.comQueue.run
+      rateGroup_1Hz.RateGroupMemberOut[3] -> ComCcsds.aggregator.timeout
+
+      # Remaining periodic work
+      rateGroup_1Hz.RateGroupMemberOut[4] -> CdhCore.tlmSend.Run
+      rateGroup_1Hz.RateGroupMemberOut[5] -> FileHandling.fileDownlink.Run
+      rateGroup_1Hz.RateGroupMemberOut[6] -> systemResources.run
 
       # 0.5Hz rate group
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup_0_5Hz] -> rateGroup_0_5Hz.CycleIn
