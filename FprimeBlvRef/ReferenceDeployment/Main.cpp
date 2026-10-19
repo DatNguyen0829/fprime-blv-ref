@@ -1,96 +1,55 @@
-// ======================================================================
-// \title  Main.cpp
-// \brief main program for the F' application. Intended for CLI-based systems (Linux, macOS)
-//
-// ======================================================================
-// Used to access topology functions
 #include <FprimeBlvRef/ReferenceDeployment/Top/ReferenceDeploymentTopology.hpp>
-// OSAL initialization
 #include <Os/Os.hpp>
-// Used for signal handling shutdown
-#include <signal.h>
-// Used for command line argument processing
-#include <getopt.h>
-// Used for atoi
-#include <cstdlib>
-// Used for logging to the console
-#include <Fw/Logger/Logger.hpp>
 
-/**
- * \brief print command line help message
- *
- * This will print a command line help message including the available command line arguments.
- *
- * @param app: name of application
- */
-void print_usage(const char* app) {
-    Fw::Logger::log("Usage: ./%s [options]\n-b\tBaud rate\n-d\tUART Device\n", app);
+#include <zephyr/device.h>
+#include <zephyr/drivers/uart.h>
+#include <zephyr/kernel.h>
+
+namespace {
+
+void sendMarker(const struct device* uart, const char* text) {
+    while (*text != '\0') {
+        uart_poll_out(uart, *text++);
+    }
 }
 
-/**
- * \brief shutdown topology cycling on signal
- *
- * The reference topology allows for a simulated cycling of the rate groups. This simulated cycling needs to be stopped
- * in order for the program to shutdown. This is done via handling signals such that it is performed via Ctrl-C
- *
- * @param signum
- */
-static void signalHandler(int signum) {
-    FprimeBlvRef::stopRateGroups();
 }
 
-/**
- * \brief execute the program
- *
- * This F´ program is designed to run in standard environments (e.g. Linux/macOs running on a laptop). Thus it uses
- * command line inputs to specify how to connect.
- *
- * @param argc: argument count supplied to program
- * @param argv: argument values supplied to program
- * @return: 0 on success, something else on failure
- */
-int main(int argc, char* argv[]) {
-    I32 option = 0;
-    CHAR* uart_device = nullptr;
-    U32 baud_rate = 0;
+int main() {
+    // ** DO NOT REMOVE **//
+    //
+    // This sleep is necessary to allow the USB CDC ACM interface to initialize before
+    // the application starts writing to it.
+    k_sleep(K_MSEC(3000));
 
     Os::init();
 
-    // Loop while reading the getopt supplied options
-    while ((option = getopt(argc, argv, "hb:d:")) != -1) {
-        switch (option) {
-            // Handle the -b baud rate argument
-            case 'b':
-                baud_rate = static_cast<U32>(atoi(optarg));
-                break;
-            // Handle the -d device argument
-            case 'd':
-                uart_device = optarg;
-                break;
-            // Cascade intended: help output
-            case 'h':
-            // Cascade intended: help output
-            case '?':
-            // Default case: output help and exit
-            default:
-                print_usage(argv[0]);
-                return (option == 'h') ? 0 : 1;
-        }
+    const struct device* uartDevice =
+        DEVICE_DT_GET(DT_NODELABEL(cdc_acm_uart0));
+
+    if (!device_is_ready(uartDevice)) {
+        return -1;
     }
-    // Object for communicating state to the topology
-    FprimeBlvRef::TopologyState inputs;
-    inputs.uartDevice = uart_device;
-    inputs.baudRate = baud_rate;
 
-    // Setup program shutdown via Ctrl-C
-    signal(SIGINT, signalHandler);
-    signal(SIGTERM, signalHandler);
-    Fw::Logger::log("Hit Ctrl-C to quit\n");
+    // Wait until Python/GDS opens the virtual COM port.
+    // uint32_t dtr = 0;
+    // while (dtr == 0) {
+    //     uart_line_ctrl_get(uartDevice, UART_LINE_CTRL_DTR, &dtr);
+    //     k_sleep(K_MSEC(100));
+    // }
 
-    // Setup, cycle, and teardown topology
-    FprimeBlvRef::setupTopology(inputs);
+    // sendMarker(uartDevice, "BEFORE SETUP\r\n");
+
+    FprimeBlvRef::TopologyState state{};
+    state.uartDevice = uartDevice;
+    state.baudRate = 115200;
+
+    FprimeBlvRef::setupTopology(state);
+
+    // This happens after ZephyrUartDriver::configure().
+    // sendMarker(uartDevice, "AFTER SETUP\r\n");
+
     FprimeBlvRef::startRateGroups();
-    FprimeBlvRef::teardownTopology(inputs);
-    Fw::Logger::log("Exiting...\n");
+    FprimeBlvRef::teardownTopology(state);
     return 0;
 }
