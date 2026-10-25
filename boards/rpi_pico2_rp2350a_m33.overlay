@@ -1,13 +1,22 @@
 /*
  * USB CDC ACM virtual UART for the Raspberry Pi Pico 2.
  */
+#include <zephyr/dt-bindings/gpio/gpio.h>
 
-// / {
-//     chosen {
-//         zephyr,console = &cdc_acm_uart0;
-//         zephyr,shell-uart = &cdc_acm_uart0;
-//     };
-// };
+/ {
+    chosen {
+        zephyr,console = &cdc_acm_uart0;
+    };
+
+    blv-gpio-outputs {
+        compatible = "gpio-leds";
+
+        status_led: status-led {
+            gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
+            label = "BLV Status LED";
+        };
+    };
+};
 
 &zephyr_udc0 {
     status = "okay";
