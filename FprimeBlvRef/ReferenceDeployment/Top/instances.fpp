@@ -49,6 +49,11 @@ module FprimeBlvRef {
     stack size Default.STACK_SIZE \
     priority 12
 
+  instance statusLedManager: FprimeBlvRef.LedBlinker base id 0x10005000 \
+    queue size Default.QUEUE_SIZE \
+    stack size Default.STACK_SIZE \
+    priority 12
+
   # ----------------------------------------------------------------------
   # Queued component instances
   # ----------------------------------------------------------------------
@@ -67,5 +72,7 @@ module FprimeBlvRef {
   instance timer: Zephyr.ZephyrRateDriver base id 0x10013000
 
   instance comDriver: Zephyr.ZephyrUartDriver base id 0x10014000
+
+  instance statusLedDriver: Zephyr.ZephyrGpioDriver base id 0x10014000
 
 }

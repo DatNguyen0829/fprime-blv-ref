@@ -32,6 +32,8 @@ module FprimeBlvRef {
     instance timer
     instance comDriver
     instance cmdSeq
+    instance statusLedManager
+    instance statusLedDriver
 
   # ----------------------------------------------------------------------
   # Pattern graph specifiers
@@ -138,7 +140,8 @@ module FprimeBlvRef {
     }
 
     connections ReferenceDeployment {
-
+      # GPIO write connections
+      statusLedManager.statusLedSet -> statusLedDriver.gpioWrite
     }
 
   }
