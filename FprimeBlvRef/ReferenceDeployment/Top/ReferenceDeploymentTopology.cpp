@@ -12,6 +12,7 @@
 #include <Fw/Types/MallocAllocator.hpp>
 #include <Fw/Types/Assert.hpp>
 #include <zephyr/drivers/uart.h>
+#include <zephyr/drivers/gpio.h>
 
 // Public functions for use in main program are namespaced with deployment module FprimeBlvRef
 // This is also the namespace where the topology components are instantiated by FPP.
@@ -30,6 +31,9 @@ Svc::ActiveRateGroup::ContextArray rateGroup_1HzContext(0);
 Svc::ActiveRateGroup::ContextArray rateGroup_0_5HzContext(0);
 Svc::ActiveRateGroup::ContextArray rateGroup_0_25HzContext(0);
 
+// Getting gpio pins map to proper device tree labels
+static const gpio_dt_spec statusLedPin = GPIO_DT_SPEC_GET(DT_NODELABEL(status_led), gpios);
+
 /**
  * \brief: to debug
  */
@@ -44,6 +48,29 @@ void debugMarker(const struct device* uart, const char* text) {
 
     uart_poll_out(uart, '\r');
     uart_poll_out(uart, '\n');
+}
+
+/**
+ * \brief configure and open a single subsystem power-enable output
+ *
+ * Configures the pin as an output initialized inactive/high, then hands it to the
+ * ZephyrGpioDriver instance. A failed GPIO does not abort deployment startup; it is
+ * only reported so the remaining outputs can still be brought up.
+ */
+static bool configureGpioOutput(Zephyr::ZephyrGpioDriver& driver, const gpio_dt_spec& pin) {
+    if (!gpio_is_ready_dt(&pin)) {
+        return false;
+    }
+
+    if (gpio_pin_configure_dt(&pin, GPIO_OUTPUT_INACTIVE) != 0) {
+        return false;
+    }
+
+    if (driver.open(pin, Zephyr::ZephyrGpioDriver::OUT) != Os::File::Status::OP_OK) {
+        return false;
+    }
+
+    return gpio_pin_set_dt(&pin, 0) == 0;
 }
 
 /**
@@ -67,6 +94,9 @@ void configureTopology() {
 
     // PrmDb file name must be supplied by the using topology
     FileHandling::prmDb.configure("PrmDb.dat");
+
+    // Configure gpio output pins
+    configureGpioOutput(statusLedDriver, statusLedPin);
 }
 
 void setupTopology(const TopologyState& state) {
