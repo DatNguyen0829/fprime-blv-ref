@@ -2,10 +2,27 @@ module FprimeBlvRef {
     @ Blinking test for zephyr implementation
     active component LedBlinker {
 
-        # One async command/port is required for active components
-        # This should be overridden by the developers with a useful command/port
-        @ TODO
-        async command TODO opcode 0
+        ###############################################################################
+        #                               COMMANDS                                      #
+        ###############################################################################
+
+        async command SET_LED (
+            led_state: Fw.On @< Indicates whether the led should be on or off
+        )
+
+        ###############################################################################
+        #                                EVENTS                                       #
+        ###############################################################################
+        event LED_STATE(ledState: Fw.On) \
+            severity activity high \
+            format "LED IS {}!"
+
+        ###############################################################################
+        #                                 PORTS                                       #
+        ###############################################################################
+
+        @ output port to call ZephyrGpioDriver
+        output port statusLedSet: Drv.GpioWrite
 
         ###############################################################################
         # Standard AC Ports: Required for Channels, Events, Commands, and Parameters  #

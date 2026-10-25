@@ -29,12 +29,11 @@ class LedBlinker final : public LedBlinkerComponentBase {
     // Handler implementations for commands
     // ----------------------------------------------------------------------
 
-    //! Handler implementation for command TODO
-    //!
-    //! TODO
-    void TODO_cmdHandler(FwOpcodeType opCode,  //!< The opcode
-                         U32 cmdSeq            //!< The command sequence number
-                         ) override;
+    //! Handler implementation for command SET_LED
+    void SET_LED_cmdHandler(FwOpcodeType opCode,     //!< The opcode
+                            U32 cmdSeq,              //!< The command sequence number
+                            const Fw::On& led_state  //!< Indicates whether the led should be on or off
+                            ) override;
 };
 
 }  // namespace FprimeBlvRef
