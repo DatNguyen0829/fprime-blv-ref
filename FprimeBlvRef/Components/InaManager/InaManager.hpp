@@ -23,6 +23,18 @@ class InaManager final : public InaManagerComponentBase {
 
     //! Destroy InaManager object
     ~InaManager();
+
+  private:
+    // ----------------------------------------------------------------------
+    // Handler implementations for typed input ports
+    // ----------------------------------------------------------------------
+
+    //! Handler implementation for run
+    //!
+    //! Input port for running tick scheduler
+    void run_handler(FwIndexType portNum,  //!< The port number
+                     U32 context           //!< The call order
+                     ) override;
 };
 
 }  // namespace FprimeBlvRef

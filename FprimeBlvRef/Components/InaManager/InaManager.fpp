@@ -1,25 +1,23 @@
 module FprimeBlvRef {
     @ Manager that interfaces with on board INA260 voltage, current, and power sensor
-    passive component InaManager {
+    queued component InaManager {
 
-        ##############################################################################
-        #### Uncomment the following examples to start customizing your component ####
-        ##############################################################################
+        ###############################################################################
+        #                               PORTS                                         #
+        ###############################################################################
 
-        # @ Example async command
-        # async command COMMAND_NAME(param_name: U32)
+        @ Input port for running tick scheduler
+        async input port run: Svc.Sched
 
-        # @ Example telemetry counter
-        # telemetry ExampleCounter: U64
+        @ Out port to call ZephyrI2cDriver for write AND read operations
+        output port inaWriteRead: Drv.I2cWriteRead
 
-        # @ Example event
-        # event ExampleStateEvent(example_state: Fw.On) severity activity high id 0 format "State set to {}"
+        ###############################################################################
+        #                               TELEMETRY                                     #
+        ###############################################################################
 
-        # @ Example port: receiving calls from the rate group
-        # sync input port run: Svc.Sched
-
-        # @ Example parameter
-        # param PARAMETER_NAME: U32
+        @ Telemetry channel for system voltage, current, power readings
+        telemetry  systemPowerReadings: PowerReading
 
         ###############################################################################
         # Standard AC Ports: Required for Channels, Events, Commands, and Parameters  #

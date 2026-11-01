@@ -16,4 +16,12 @@ InaManager ::InaManager(const char* const compName) : InaManagerComponentBase(co
 
 InaManager ::~InaManager() {}
 
+// ----------------------------------------------------------------------
+// Handler implementations for typed input ports
+// ----------------------------------------------------------------------
+
+void InaManager ::run_handler(FwIndexType portNum, U32 context) {
+    // TODO
+}
+
 }  // namespace FprimeBlvRef
