@@ -20,6 +20,14 @@ module FprimeBlvRef {
         telemetry  systemPowerReadings: PowerReading
 
         ###############################################################################
+        #                                EVENT                                        #
+        ###############################################################################
+
+        @ Event for failed INA260 read
+        event I2cReadFailed(register_address: U8, status: I32) severity warning high \
+            format "INA260 I2C read failed for register 0x{} with status {}"
+
+        ###############################################################################
         # Standard AC Ports: Required for Channels, Events, Commands, and Parameters  #
         ###############################################################################
         @ Port for requesting the current time
