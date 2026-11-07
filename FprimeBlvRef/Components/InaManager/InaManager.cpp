@@ -27,12 +27,6 @@ InaManager ::~InaManager() {}
 
 void InaManager ::run_handler(FwIndexType portNum, U32 context) {
 
-    // Dispatch current queued messages
-    FwSizeType numMsgs = this->m_queue.getMessagesAvailable();
-    for (FwSizeType i = 0; i < numMsgs; ++i) {
-        (void) this->doDispatch();
-    }
-
     // Set correpsonding values for each read
     if(this->readRegister16(this->INA_ADDR, this->INA260_REG_CURRENT, this->rawCurrent)) // Read current values
     {

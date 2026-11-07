@@ -1,13 +1,13 @@
 module FprimeBlvRef {
     @ Manager that interfaces with on board INA260 voltage, current, and power sensor
-    queued component InaManager {
+    passive component InaManager {
 
         ###############################################################################
         #                               PORTS                                         #
         ###############################################################################
 
         @ Input port for running tick scheduler
-        async input port run: Svc.Sched
+        sync input port run: Svc.Sched
 
         @ Out port to call ZephyrI2cDriver for write AND read operations
         output port inaWriteRead: Drv.I2cWriteRead
