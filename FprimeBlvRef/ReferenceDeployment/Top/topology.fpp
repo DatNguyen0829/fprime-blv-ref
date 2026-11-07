@@ -33,7 +33,9 @@ module FprimeBlvRef {
     instance comDriver
     instance cmdSeq
     instance statusLedManager
+    instance inaManager
     instance statusLedDriver
+    instance inaDriver
 
   # ----------------------------------------------------------------------
   # Pattern graph specifiers
@@ -120,6 +122,9 @@ module FprimeBlvRef {
       rateGroup_1Hz.RateGroupMemberOut[5] -> FileHandling.fileDownlink.Run
       rateGroup_1Hz.RateGroupMemberOut[6] -> systemResources.run
 
+      # Running Ina Sensor to poll power data
+      rateGroup_1Hz.RateGroupMemberOut[7] -> inaManager.run
+
       # 0.5Hz rate group
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup_0_5Hz] -> rateGroup_0_5Hz.CycleIn
       rateGroup_0_5Hz.RateGroupMemberOut[0] -> cmdSeq.schedIn
@@ -142,6 +147,9 @@ module FprimeBlvRef {
     connections ReferenceDeployment {
       # GPIO write connections
       statusLedManager.statusLedSet -> statusLedDriver.gpioWrite
+
+      # I2C write and read connection
+      inaManager.inaWriteRead -> inaDriver.writeRead
     }
 
   }

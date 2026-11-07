@@ -97,6 +97,9 @@ void configureTopology() {
 
     // Configure gpio output pins
     configureGpioOutput(statusLedDriver, statusLedPin);
+
+    // Opening i2c0 bus
+    inaDriver.open(DEVICE_DT_GET(DT_NODELABEL(i2c0)));
 }
 
 void setupTopology(const TopologyState& state) {

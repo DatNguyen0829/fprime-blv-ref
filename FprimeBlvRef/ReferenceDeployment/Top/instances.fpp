@@ -58,7 +58,6 @@ module FprimeBlvRef {
   # Queued component instances
   # ----------------------------------------------------------------------
 
-
   # ----------------------------------------------------------------------
   # Passive component instances
   # ----------------------------------------------------------------------
@@ -73,6 +72,10 @@ module FprimeBlvRef {
 
   instance comDriver: Zephyr.ZephyrUartDriver base id 0x10014000
 
-  instance statusLedDriver: Zephyr.ZephyrGpioDriver base id 0x10014000
+  instance statusLedDriver: Zephyr.ZephyrGpioDriver base id 0x10015000
+
+  instance inaManager: FprimeBlvRef.InaManager base id 0x10016000 
+
+  instance inaDriver: Zephyr.ZephyrI2cDriver base id 0x10017000
 
 }
