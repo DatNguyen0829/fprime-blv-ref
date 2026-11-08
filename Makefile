@@ -37,3 +37,23 @@ setup: ## Set up the repo
 	west packages pip --install
 	cd $(PROJECT_ROOT)/lib/zephyr-workspace/
 	west sdk install --toolchains arm-zephyr-eabi
+
+.PHONY: build
+.ONESHELL:
+build: ## Generate and build the zephyr deployment
+	@set -e
+	@echo "Setting up development generation for fprime-blv-ref with zephyr..."
+	fprime-util generate -DBOARD=rpi_pico2/rp2350a/m33 zephyr
+	fprime-util build zephyr
+	@echo "Successful build of Zephyr image"
+
+.PHONY: gds
+.ONESHELL:
+gds: ## Give access to port and run fprime gds
+	@set -e
+	@echo "Giving access to blv port..."
+	sudo chmod a+rw /dev/ttyACM0
+	@echo "Read and Write access given"
+	@echo "Running GDs..."
+	fprime-gds   -n   --dictionary "$PWD/build-artifacts/zephyr/fprime-zephyr-deployment/dict/ReferenceDeploymentTopologyDictionary.json"   --communication-selection uart   --uart-device /dev/ttyACM0   --uart-baud 115200   --framing-selection space-packet-space-data-link
+
