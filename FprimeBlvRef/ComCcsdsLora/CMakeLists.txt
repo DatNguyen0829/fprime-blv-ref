@@ -1,0 +1,11 @@
+register_fprime_module(
+    EXCLUDE_FROM_ALL
+    AUTOCODER_INPUTS
+        "${CMAKE_CURRENT_LIST_DIR}/ComCcsdsLora.fpp"
+    HEADERS
+        "${CMAKE_CURRENT_LIST_DIR}/ComCcsdsLoraTopologyDefs.hpp"
+        "${CMAKE_CURRENT_LIST_DIR}/PingEntries.hpp"
+    DEPENDS
+        Svc_Subtopologies_ComCcsds_ComCcsdsConfig
+    INTERFACE
+)
