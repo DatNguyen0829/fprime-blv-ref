@@ -16,7 +16,7 @@ module FprimeBlvRef {
   # Subtopology imports
   # ----------------------------------------------------------------------
     import CdhCore.Subtopology
-    import ComCcsds.Subtopology
+    import ComCcsdsUart.Subtopology
     import DataProducts.Subtopology
     import FileHandling.Subtopology
     
@@ -61,37 +61,37 @@ module FprimeBlvRef {
 
     connections ComCcsds_CdhCore {
       # Core events and telemetry to communication queue
-      CdhCore.events.PktSend -> ComCcsds.comQueue.comPacketQueueIn[ComCcsds.Ports_ComPacketQueue.EVENTS]
-      CdhCore.tlmSend.PktSend -> ComCcsds.comQueue.comPacketQueueIn[ComCcsds.Ports_ComPacketQueue.TELEMETRY]
+      CdhCore.events.PktSend -> ComCcsdsUart.comQueue.comPacketQueueIn[ComCcsdsUart.Ports_ComPacketQueue.EVENTS]
+      CdhCore.tlmSend.PktSend -> ComCcsdsUart.comQueue.comPacketQueueIn[ComCcsdsUart.Ports_ComPacketQueue.TELEMETRY]
 
       # Router to Command Dispatcher
-      ComCcsds.fprimeRouter.commandOut -> CdhCore.cmdDisp.seqCmdBuff
-      CdhCore.cmdDisp.seqCmdStatus -> ComCcsds.fprimeRouter.cmdResponseIn
+      ComCcsdsUart.fprimeRouter.commandOut -> CdhCore.cmdDisp.seqCmdBuff
+      CdhCore.cmdDisp.seqCmdStatus -> ComCcsdsUart.fprimeRouter.cmdResponseIn
       
     }
 
     connections ComCcsds_FileHandling {
       # File Downlink to Communication Queue
-      FileHandling.fileDownlink.bufferSendOut -> ComCcsds.comQueue.bufferQueueIn[ComCcsds.Ports_ComBufferQueue.FILE]
-      ComCcsds.comQueue.bufferReturnOut[ComCcsds.Ports_ComBufferQueue.FILE] -> FileHandling.fileDownlink.bufferReturn
+      FileHandling.fileDownlink.bufferSendOut -> ComCcsdsUart.comQueue.bufferQueueIn[ComCcsdsUart.Ports_ComBufferQueue.FILE]
+      ComCcsdsUart.comQueue.bufferReturnOut[ComCcsdsUart.Ports_ComBufferQueue.FILE] -> FileHandling.fileDownlink.bufferReturn
 
       # Router to File Uplink
-      ComCcsds.fprimeRouter.fileOut -> FileHandling.fileUplink.bufferSendIn
-      FileHandling.fileUplink.bufferSendOut -> ComCcsds.fprimeRouter.fileBufferReturnIn
+      ComCcsdsUart.Subtopology.fileUplinkOut -> FileHandling.fileUplink.bufferSendIn
+      FileHandling.fileUplink.bufferSendOut -> ComCcsdsUart.Subtopology.fileUplinkReturnIn
     }
 
     connections Communications {
       # ComDriver buffer allocations
-      comDriver.allocate      -> ComCcsds.commsBufferManager.bufferGetCallee
-      comDriver.deallocate    -> ComCcsds.commsBufferManager.bufferSendIn
+      comDriver.allocate      -> ComCcsdsUart.commsBufferManager.bufferGetCallee
+      comDriver.deallocate    -> ComCcsdsUart.commsBufferManager.bufferSendIn
       
       # ComDriver <-> ComStub (Uplink)
-      comDriver.$recv                     -> ComCcsds.comStub.drvReceiveIn
-      ComCcsds.comStub.drvReceiveReturnOut -> comDriver.recvReturnIn
+      comDriver.$recv                     -> ComCcsdsUart.comStub.drvReceiveIn
+      ComCcsdsUart.comStub.drvReceiveReturnOut -> comDriver.recvReturnIn
       
       # ComStub <-> ComDriver (Downlink)
-      ComCcsds.comStub.drvSendOut      -> comDriver.$send
-      comDriver.ready         -> ComCcsds.comStub.drvConnected
+      ComCcsdsUart.comStub.drvSendOut      -> comDriver.$send
+      comDriver.ready         -> ComCcsdsUart.comStub.drvConnected
     }
 
     connections FileHandling_DataProducts {
@@ -114,8 +114,8 @@ module FprimeBlvRef {
       rateGroup_1Hz.RateGroupMemberOut[1] -> CdhCore.cmdDisp.run
 
       # Process outgoing packets
-      rateGroup_1Hz.RateGroupMemberOut[2] -> ComCcsds.comQueue.run
-      rateGroup_1Hz.RateGroupMemberOut[3] -> ComCcsds.aggregator.timeout
+      rateGroup_1Hz.RateGroupMemberOut[2] -> ComCcsdsUart.comQueue.run
+      rateGroup_1Hz.RateGroupMemberOut[3] -> ComCcsdsUart.aggregator.timeout
 
       # Remaining periodic work
       rateGroup_1Hz.RateGroupMemberOut[4] -> CdhCore.tlmSend.Run
@@ -132,7 +132,7 @@ module FprimeBlvRef {
       # 0.25Hz rate group
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup_0_25Hz] -> rateGroup_0_25Hz.CycleIn
       rateGroup_0_25Hz.RateGroupMemberOut[0] -> CdhCore.$health.Run
-      rateGroup_0_25Hz.RateGroupMemberOut[1] -> ComCcsds.commsBufferManager.schedIn
+      rateGroup_0_25Hz.RateGroupMemberOut[1] -> ComCcsdsUart.commsBufferManager.schedIn
       rateGroup_0_25Hz.RateGroupMemberOut[2] -> DataProducts.dpBufferManager.schedIn
       rateGroup_0_25Hz.RateGroupMemberOut[3] -> DataProducts.dpWriter.schedIn
       rateGroup_0_25Hz.RateGroupMemberOut[4] -> DataProducts.dpMgr.schedIn

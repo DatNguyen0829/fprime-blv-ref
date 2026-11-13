@@ -2,8 +2,9 @@
 #define COMCCSDSUART_PINGENTRIES_HPP
 
 namespace PingEntries {
-    // Add ping entries for your components here. For example:
-    // namespace ComCcsdsUart_myComponent { enum { WARN = 3, FATAL = 5 }; }
-}
+
+// No ping-enabled components in the ComCcsdsUart subtopology.
+
+}  // namespace PingEntries
 
 #endif

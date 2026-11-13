@@ -1,5 +1,6 @@
 module ComCcsdsConfig {
     constant BASE_ID = 0x02000000
+    constant BASE_ID_UART = 0x21000000
 
     module QueueSizes {
         constant comQueue = 16
