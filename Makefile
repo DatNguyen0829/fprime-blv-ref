@@ -55,5 +55,5 @@ gds: ## Give access to port and run fprime gds
 	sudo chmod a+rw /dev/ttyACM0
 	@echo "Read and Write access given"
 	@echo "Running GDs..."
-	fprime-gds   -n   --dictionary "$PWD/build-artifacts/zephyr/fprime-zephyr-deployment/dict/ReferenceDeploymentTopologyDictionary.json"   --communication-selection uart   --uart-device /dev/ttyACM0   --uart-baud 115200   --framing-selection space-packet-space-data-link
+	fprime-gds   -n   --dictionary "$(PROJECT_ROOT)/build-artifacts/zephyr/fprime-zephyr-deployment/dict/ReferenceDeploymentTopologyDictionary.json"   --communication-selection uart   --uart-device /dev/ttyACM0   --uart-baud 115200   --framing-selection space-packet-space-data-link
 

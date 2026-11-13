@@ -4,6 +4,8 @@
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/project/config")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Types")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Components")
+add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/ComCcsdsUart/")
+
 
 # ReferenceDeployment is specifically for Zephyr.
 if (COMMAND register_fprime_zephyr_deployment)
