@@ -34,3 +34,11 @@
         input-schmitt-enable;
     };
 };
+
+&spi0_default {
+    status = "okay";
+	cs-gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
+	pinctrl-0 = <&spi0_default>;
+	pinctrl-names = "default";
+
+}
