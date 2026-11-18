@@ -10,8 +10,8 @@ module ComCfg {
     @ Spacecraft ID (10 bits) for CCSDS Data Link layer
     dictionary constant SpacecraftId = 0x0044
 
-    @ Fixed size of CCSDS TM frames
-    dictionary constant TmFrameFixedSize = 1024  # Needs to be at least COM_BUFFER_MAX_SIZE + (2 * SpacePacketHeaderSize) + 1
+    @ Fixed size of CCSDS TM frames sent through LoRa
+    dictionary constant TmFrameFixedSize = 248
 
     @ Upper Bound on Fixed size of CCSDS AOS frames
     constant AosMaxFrameFixedSize = 1536
