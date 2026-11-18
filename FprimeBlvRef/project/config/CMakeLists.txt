@@ -6,5 +6,7 @@ register_fprime_config(
         "${CMAKE_CURRENT_LIST_DIR}/DataProductsConfig.fpp"
         "${CMAKE_CURRENT_LIST_DIR}/FileHandlingConfig.fpp"
         "${CMAKE_CURRENT_LIST_DIR}/TlmChanImplCfg.hpp"
+        "${CMAKE_CURRENT_LIST_DIR}/ComCfg.hpp"
+        "${CMAKE_CURRENT_LIST_DIR}/FpConstantsCfg.hpp"
     INTERFACE
 )
