@@ -19,24 +19,25 @@ module ComCcsdsLora {
         priority ComCcsdsConfig.Priorities.comQueue \
         cpu ComCcsdsConfig.CpuAffinities.comQueue \
     {
-        phase Fpp.ToCpp.Phases.configComponents """
-        using namespace ComCcsdsLora;
-        Svc::ComQueue::QueueConfigurationTable configurationTableLora;
+        phase Fpp.ToCpp.Phases.configComponents """{
+            using namespace ComCcsdsLora;
+            Svc::ComQueue::QueueConfigurationTable configurationTableLora;
 
-        // Events (highest-priority)
-        configurationTableLora.entries[Ports_ComPacketQueue::EVENTS].depth = ComCcsdsConfig::QueueDepths::events;
-        configurationTableLora.entries[Ports_ComPacketQueue::EVENTS].priority = ComCcsdsConfig::QueuePriorities::events;
+            // Events (highest-priority)
+            configurationTableLora.entries[Ports_ComPacketQueue::EVENTS].depth = ComCcsdsConfig::QueueDepths::events;
+            configurationTableLora.entries[Ports_ComPacketQueue::EVENTS].priority = ComCcsdsConfig::QueuePriorities::events;
 
-        // Telemetry
-        configurationTableLora.entries[Ports_ComPacketQueue::TELEMETRY].depth = ComCcsdsConfig::QueueDepths::tlm;
-        configurationTableLora.entries[Ports_ComPacketQueue::TELEMETRY].priority = ComCcsdsConfig::QueuePriorities::tlm;
+            // Telemetry
+            configurationTableLora.entries[Ports_ComPacketQueue::TELEMETRY].depth = ComCcsdsConfig::QueueDepths::tlm;
+            configurationTableLora.entries[Ports_ComPacketQueue::TELEMETRY].priority = ComCcsdsConfig::QueuePriorities::tlm;
 
-        // File Downlink Queue (buffer queue using NUM_CONSTANTS offset)
-        configurationTableLora.entries[Ports_ComPacketQueue::NUM_CONSTANTS + Ports_ComBufferQueue::FILE].depth = ComCcsdsConfig::QueueDepths::file;
-        configurationTableLora.entries[Ports_ComPacketQueue::NUM_CONSTANTS + Ports_ComBufferQueue::FILE].priority = ComCcsdsConfig::QueuePriorities::file;
+            // File Downlink Queue (buffer queue using NUM_CONSTANTS offset)
+            configurationTableLora.entries[Ports_ComPacketQueue::NUM_CONSTANTS + Ports_ComBufferQueue::FILE].depth = ComCcsdsConfig::QueueDepths::file;
+            configurationTableLora.entries[Ports_ComPacketQueue::NUM_CONSTANTS + Ports_ComBufferQueue::FILE].priority = ComCcsdsConfig::QueuePriorities::file;
 
-        // Allocation identifier is 0 as the MallocAllocator discards it
-        ComCcsdsLora::comQueue.configure(configurationTableLora, 0, ComCcsds::Allocation::memAllocator);
+            // Allocation identifier is 0 as the MallocAllocator discards it
+            ComCcsdsLora::comQueue.configure(configurationTableLora, 0, ComCcsds::Allocation::memAllocator);
+        }
         """
         phase Fpp.ToCpp.Phases.tearDownComponents """
         ComCcsdsLora::comQueue.cleanup();

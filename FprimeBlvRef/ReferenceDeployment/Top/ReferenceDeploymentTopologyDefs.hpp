@@ -9,18 +9,24 @@
 // Subtopology PingEntries includes
 #include "Svc/Subtopologies/CdhCore/PingEntries.hpp"
 #include "FprimeBlvRef/ComCcsdsUart/PingEntries.hpp"
+#include "FprimeBlvRef/ComCcsdsLora/PingEntries.hpp"
 #include "Svc/Subtopologies/DataProducts/PingEntries.hpp"
 #include "Svc/Subtopologies/FileHandling/PingEntries.hpp"
 
 // SubtopologyTopologyDefs includes
 #include "Svc/Subtopologies/CdhCore/SubtopologyTopologyDefs.hpp"
 #include "FprimeBlvRef/ComCcsdsUart/ComCcsdsUartTopologyDefs.hpp"
+#include "FprimeBlvRef/ComCcsdsLora/ComCcsdsLoraTopologyDefs.hpp"
 #include "Svc/Subtopologies/DataProducts/SubtopologyTopologyDefs.hpp"
 #include "Svc/Subtopologies/FileHandling/SubtopologyTopologyDefs.hpp"
 
 //ComCcsds Enum Includes (For ComCcsdsUart)
 #include "FprimeBlvRef/ComCcsdsUart/Ports_ComPacketQueueEnumAc.hpp"
 #include "FprimeBlvRef/ComCcsdsUart/Ports_ComBufferQueueEnumAc.hpp"
+
+//ComCcsds Enum Includes (For ComCcsdsLora)
+#include "FprimeBlvRef/ComCcsdsLora/Ports_ComPacketQueueEnumAc.hpp"
+#include "FprimeBlvRef/ComCcsdsLora/Ports_ComBufferQueueEnumAc.hpp"
 
 // Include autocoded FPP constants
 #include "FprimeBlvRef/ReferenceDeployment/Top/FppConstantsAc.hpp"

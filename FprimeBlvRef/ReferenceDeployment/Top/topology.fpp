@@ -17,6 +17,7 @@ module FprimeBlvRef {
   # ----------------------------------------------------------------------
     import CdhCore.Subtopology
     import ComCcsdsUart.Subtopology
+    import ComCcsdsLora.Subtopology
     import DataProducts.Subtopology
     import FileHandling.Subtopology
     
@@ -36,6 +37,9 @@ module FprimeBlvRef {
     instance inaManager
     instance statusLedDriver
     instance inaDriver
+    instance loraDriver
+    instance comSplitterEvents
+    instance comSplitterTelemetry
 
   # ----------------------------------------------------------------------
   # Pattern graph specifiers

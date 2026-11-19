@@ -19,24 +19,25 @@ module ComCcsdsUart {
         priority ComCcsdsConfig.Priorities.comQueue \
         cpu ComCcsdsConfig.CpuAffinities.comQueue \
     {
-        phase Fpp.ToCpp.Phases.configComponents """
-        using namespace ComCcsdsUart;
-        Svc::ComQueue::QueueConfigurationTable configurationTableUart;
+        phase Fpp.ToCpp.Phases.configComponents """{
+            using namespace ComCcsdsUart;
+            Svc::ComQueue::QueueConfigurationTable configurationTableUart;
 
-        // Events (highest-priority)
-        configurationTableUart.entries[Ports_ComPacketQueue::EVENTS].depth = ComCcsdsConfig::QueueDepths::events;
-        configurationTableUart.entries[Ports_ComPacketQueue::EVENTS].priority = ComCcsdsConfig::QueuePriorities::events;
+            // Events (highest-priority)
+            configurationTableUart.entries[Ports_ComPacketQueue::EVENTS].depth = ComCcsdsConfig::QueueDepths::events;
+            configurationTableUart.entries[Ports_ComPacketQueue::EVENTS].priority = ComCcsdsConfig::QueuePriorities::events;
 
-        // Telemetry
-        configurationTableUart.entries[Ports_ComPacketQueue::TELEMETRY].depth = ComCcsdsConfig::QueueDepths::tlm;
-        configurationTableUart.entries[Ports_ComPacketQueue::TELEMETRY].priority = ComCcsdsConfig::QueuePriorities::tlm;
+            // Telemetry
+            configurationTableUart.entries[Ports_ComPacketQueue::TELEMETRY].depth = ComCcsdsConfig::QueueDepths::tlm;
+            configurationTableUart.entries[Ports_ComPacketQueue::TELEMETRY].priority = ComCcsdsConfig::QueuePriorities::tlm;
 
-        // File Downlink Queue (buffer queue using NUM_CONSTANTS offset)
-        configurationTableUart.entries[Ports_ComPacketQueue::NUM_CONSTANTS + Ports_ComBufferQueue::FILE].depth = ComCcsdsConfig::QueueDepths::file;
-        configurationTableUart.entries[Ports_ComPacketQueue::NUM_CONSTANTS + Ports_ComBufferQueue::FILE].priority = ComCcsdsConfig::QueuePriorities::file;
+            // File Downlink Queue (buffer queue using NUM_CONSTANTS offset)
+            configurationTableUart.entries[Ports_ComPacketQueue::NUM_CONSTANTS + Ports_ComBufferQueue::FILE].depth = ComCcsdsConfig::QueueDepths::file;
+            configurationTableUart.entries[Ports_ComPacketQueue::NUM_CONSTANTS + Ports_ComBufferQueue::FILE].priority = ComCcsdsConfig::QueuePriorities::file;
 
-        // Allocation identifier is 0 as the MallocAllocator discards it
-        ComCcsdsUart::comQueue.configure(configurationTableUart, 0, ComCcsds::Allocation::memAllocator);
+            // Allocation identifier is 0 as the MallocAllocator discards it
+            ComCcsdsUart::comQueue.configure(configurationTableUart, 0, ComCcsds::Allocation::memAllocator);
+        }
         """
         phase Fpp.ToCpp.Phases.tearDownComponents """
         ComCcsdsUart::comQueue.cleanup();
