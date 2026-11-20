@@ -65,12 +65,24 @@ module FprimeBlvRef {
 
     connections ComCcsds_CdhCore {
       # Core events and telemetry to communication queue
-      CdhCore.events.PktSend -> ComCcsdsUart.comQueue.comPacketQueueIn[ComCcsdsUart.Ports_ComPacketQueue.EVENTS]
-      CdhCore.tlmSend.PktSend -> ComCcsdsUart.comQueue.comPacketQueueIn[ComCcsdsUart.Ports_ComPacketQueue.TELEMETRY]
 
-      # Router to Command Dispatcher
+      # Splitting Events
+      CdhCore.events.PktSend -> comSplitterEvents.comIn
+      comSplitterEvents.comOut -> ComCcsdsUart.comQueue.comPacketQueueIn[ComCcsdsUart.Ports_ComPacketQueue.EVENTS]
+      comSplitterEvents.comOut -> ComCcsdsLora.comQueue.comPacketQueueIn[ComCcsdsLora.Ports_ComPacketQueue.EVENTS]
+      
+      # Splitting Telemetry
+      CdhCore.tlmSend.PktSend -> comSplitterTelemetry.comIn
+      comSplitterTelemetry.comOut -> ComCcsdsUart.comQueue.comPacketQueueIn[ComCcsdsUart.Ports_ComPacketQueue.TELEMETRY]
+      comSplitterTelemetry.comOut -> ComCcsdsLora.comQueue.comPacketQueueIn[ComCcsdsLora.Ports_ComPacketQueue.TELEMETRY]
+
+      # Router to Command Dispatcher (UART)
       ComCcsdsUart.fprimeRouter.commandOut -> CdhCore.cmdDisp.seqCmdBuff
       CdhCore.cmdDisp.seqCmdStatus -> ComCcsdsUart.fprimeRouter.cmdResponseIn
+
+      # Router to Command Dispatcher (Lora)
+      ComCcsdsLora.fprimeRouter.commandOut -> CdhCore.cmdDisp.seqCmdBuff
+      CdhCore.cmdDisp.seqCmdStatus -> ComCcsdsLora.fprimeRouter.cmdResponseIn
       
     }
 
@@ -96,6 +108,27 @@ module FprimeBlvRef {
       # ComStub <-> ComDriver (Downlink)
       ComCcsdsUart.comStub.drvSendOut      -> comDriver.$send
       comDriver.ready         -> ComCcsdsUart.comStub.drvConnected
+    }
+
+    connections LoraCommunications {
+      # loraDriver buffer allocations
+      loraDriver.allocate -> ComCcsdsLora.commsBufferManager.bufferGetCallee
+      loraDriver.deallocate -> ComCcsdsLora.commsBufferManager.bufferSendIn
+
+      # Downlink: CCSDS TM frame to the LoRa driver
+      ComCcsdsLora.Subtopology.dataOut -> loraDriver.dataIn
+
+      # Return ownership of the transmitted frame
+      loraDriver.dataReturnOut -> ComCcsdsLora.Subtopology.dataReturnIn
+
+      # Report the LoRa communication state to the CCSDS stack
+      loraDriver.comStatusOut -> ComCcsdsLora.Subtopology.comStatusIn
+
+      # Uplink: received LoRa packet into the CCSDS frame accumulator
+      loraDriver.dataOut -> ComCcsdsLora.Subtopology.dataIn
+
+      # Return ownership of the received LoRa buffer
+      ComCcsdsLora.Subtopology.dataReturnOut -> loraDriver.dataReturnIn
     }
 
     connections FileHandling_DataProducts {
@@ -126,12 +159,17 @@ module FprimeBlvRef {
       rateGroup_1Hz.RateGroupMemberOut[5] -> FileHandling.fileDownlink.Run
       rateGroup_1Hz.RateGroupMemberOut[6] -> systemResources.run
 
-      # Running Ina Sensor to poll power data
-      rateGroup_1Hz.RateGroupMemberOut[7] -> inaManager.run
+      # Process outgoing LoRa packets
+      rateGroup_1Hz.RateGroupMemberOut[8] -> ComCcsdsLora.comQueue.run
+
+      # Flush partially filled LoRa aggregation frames
+      rateGroup_1Hz.RateGroupMemberOut[9] -> ComCcsdsLora.aggregator.timeout
 
       # 0.5Hz rate group
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup_0_5Hz] -> rateGroup_0_5Hz.CycleIn
       rateGroup_0_5Hz.RateGroupMemberOut[0] -> cmdSeq.schedIn
+      # Running Ina Sensor to poll power data
+      rateGroup_0_5Hz.RateGroupMemberOut[1] -> inaManager.run
 
       # 0.25Hz rate group
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup_0_25Hz] -> rateGroup_0_25Hz.CycleIn
@@ -140,6 +178,10 @@ module FprimeBlvRef {
       rateGroup_0_25Hz.RateGroupMemberOut[2] -> DataProducts.dpBufferManager.schedIn
       rateGroup_0_25Hz.RateGroupMemberOut[3] -> DataProducts.dpWriter.schedIn
       rateGroup_0_25Hz.RateGroupMemberOut[4] -> DataProducts.dpMgr.schedIn
+      # LoRa communication buffer-manager telemetry
+      rateGroup_0_25Hz.RateGroupMemberOut[5] -> ComCcsdsLora.commsBufferManager.schedIn
+      # Allows the LoRa driver to re-arm reception after a continuous-wave test
+      rateGroup_0_25Hz.RateGroupMemberOut[6] -> loraDriver.run
     }
 
     connections CdhCore_cmdSeq {
