@@ -36,7 +36,7 @@ setup: ## Set up the repo
 	west update
 	west packages pip --install
 	cd $(PROJECT_ROOT)/lib/zephyr-workspace/
-	west sdk install --toolchains arm-zephyr-eabi
+	west sdk install --version 1.0.1 --toolchains arm-zephyr-eabi
 
 .PHONY: build
 .ONESHELL:
