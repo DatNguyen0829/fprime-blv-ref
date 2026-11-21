@@ -80,7 +80,7 @@ module ComCcsdsUart {
         ConfigObjects::ComCcsdsUart_commsBufferManager::bins.bins[1].bufferSize = ComCcsdsConfig::BuffMgr::commsFileBuffSize;
         ConfigObjects::ComCcsdsUart_commsBufferManager::bins.bins[1].numBuffers = ComCcsdsConfig::BuffMgr::commsFileBuffCount;
         ComCcsdsUart::commsBufferManager.setup(
-            ComCcsdsConfig::BuffMgr::commsBuffMgrId,
+            ComCcsdsConfig::BuffMgr::commsBuffMgrIdUart,
             0,
             ComCcsds::Allocation::memAllocator,
             ConfigObjects::ComCcsdsUart_commsBufferManager::bins

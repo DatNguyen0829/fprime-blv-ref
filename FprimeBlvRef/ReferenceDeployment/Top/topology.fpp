@@ -160,10 +160,10 @@ module FprimeBlvRef {
       rateGroup_1Hz.RateGroupMemberOut[6] -> systemResources.run
 
       # Process outgoing LoRa packets
-      rateGroup_1Hz.RateGroupMemberOut[8] -> ComCcsdsLora.comQueue.run
+      rateGroup_1Hz.RateGroupMemberOut[7] -> ComCcsdsLora.comQueue.run
 
       # Flush partially filled LoRa aggregation frames
-      rateGroup_1Hz.RateGroupMemberOut[9] -> ComCcsdsLora.aggregator.timeout
+      rateGroup_1Hz.RateGroupMemberOut[8] -> ComCcsdsLora.aggregator.timeout
 
       # 0.5Hz rate group
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup_0_5Hz] -> rateGroup_0_5Hz.CycleIn

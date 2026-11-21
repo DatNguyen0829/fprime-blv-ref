@@ -80,7 +80,7 @@ module ComCcsdsLora {
         ConfigObjects::ComCcsdsLora_commsBufferManager::bins.bins[1].bufferSize = ComCcsdsConfig::BuffMgr::commsFileBuffSize;
         ConfigObjects::ComCcsdsLora_commsBufferManager::bins.bins[1].numBuffers = ComCcsdsConfig::BuffMgr::commsFileBuffCount;
         ComCcsdsLora::commsBufferManager.setup(
-            ComCcsdsConfig::BuffMgr::commsBuffMgrId,
+            ComCcsdsConfig::BuffMgr::commsBuffMgrIdLora,
             0,
             ComCcsds::Allocation::memAllocator,
             ConfigObjects::ComCcsdsLora_commsBufferManager::bins

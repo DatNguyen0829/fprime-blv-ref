@@ -41,6 +41,9 @@ module ComCcsdsConfig {
         constant commsFileBuffSize = 1024
         constant commsBuffCount = 5
         constant commsFileBuffCount = 5
-        constant commsBuffMgrId = 200
+
+        @ Unique manager IDs for the independent communication pools
+        constant commsBuffMgrIdUart = 200
+        constant commsBuffMgrIdLora = 201
     }
 }
