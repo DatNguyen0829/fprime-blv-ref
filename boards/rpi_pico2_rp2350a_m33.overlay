@@ -81,5 +81,8 @@
         */
         pa-boost-enable-gpios =
             <&gpio0 24 (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>;
+        
+        /* SX1278 RF output used by the E32 module */
+        power-amplifier-output = "pa-boost";
     };
 };
