@@ -1,6 +1,7 @@
 module ComCcsdsConfig {
     constant BASE_ID = 0x02000000
     constant BASE_ID_UART = 0x21000000
+    constant BASE_ID_LORA = 0x22000000
 
     module QueueSizes {
         constant comQueue = 16
@@ -40,6 +41,9 @@ module ComCcsdsConfig {
         constant commsFileBuffSize = 1024
         constant commsBuffCount = 5
         constant commsFileBuffCount = 5
-        constant commsBuffMgrId = 200
+
+        @ Unique manager IDs for the independent communication pools
+        constant commsBuffMgrIdUart = 200
+        constant commsBuffMgrIdLora = 201
     }
 }

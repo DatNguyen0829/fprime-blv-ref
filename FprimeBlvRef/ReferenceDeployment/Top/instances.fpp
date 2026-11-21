@@ -78,4 +78,9 @@ module FprimeBlvRef {
 
   instance inaDriver: Zephyr.ZephyrI2cDriver base id 0x10017000
 
+  instance loraDriver: Zephyr.LoRa base id 0x10018000
+
+  instance comSplitterEvents: Svc.ComSplitter base id 0x10019000
+
+  instance comSplitterTelemetry: Svc.ComSplitter base id 0x10020000
 }

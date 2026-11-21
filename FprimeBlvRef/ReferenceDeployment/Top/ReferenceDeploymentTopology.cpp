@@ -34,6 +34,9 @@ Svc::ActiveRateGroup::ContextArray rateGroup_0_25HzContext(0);
 // Getting gpio pins map to proper device tree labels
 static const gpio_dt_spec statusLedPin = GPIO_DT_SPEC_GET(DT_NODELABEL(status_led), gpios);
 
+// Mapping Lora device to proper device tree labels
+static const struct device* loraDevice = DEVICE_DT_GET(DT_NODELABEL(lora0));
+
 /**
  * \brief: to debug
  */
@@ -135,7 +138,21 @@ void setupTopology(const TopologyState& state) {
     FW_ASSERT(state.uartDevice != nullptr);
 
     comDriver.configure(state.uartDevice, state.baudRate);
+    // debugMarker(state.uartDevice, "UART CONFIGURED");
     // debugMarker(state.uartDevice, "S10 UART CONFIG");
+
+    // Start the LoRa radio in receive-only mode.
+    const Zephyr::LoRa::Status loraStatus =
+        loraDriver.start(loraDevice, Zephyr::TransmitState::DISABLED);
+
+    // debugMarker(state.uartDevice, "LORA START RETURNED");
+
+    FW_ASSERT(
+        loraStatus == Zephyr::LoRa::SUCCESS,
+        static_cast<FwAssertArgType>(loraStatus)
+    );
+
+    // debugMarker(state.uartDevice, "SETUP COMPLETE");
 }
 
 void startRateGroups() {
